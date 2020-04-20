@@ -1,5 +1,7 @@
 import eel
 import connect
+import collections
+import sqlite3
 
 #import twitch
 from twitchio.ext import commands
@@ -13,10 +15,48 @@ import threading
 
 
 
-
+MAX_QUEUE_SIZE = 2000
 
 #@eel.expose
 #def HandleNewChat(display_name, username, original_chat, translated_chat):
+
+ChatDict = collections.OrderedDict()
+
+DBConn = sqlite3.connect('db/test.db', check_same_thread=False)
+DBCursor = DBConn.cursor()
+
+
+@eel.expose
+def BookmarkChat(chat_id):
+    message = ChatDict.get(chat_id)
+    if message is None:
+        print('message is None for ID', chat_id)
+    
+    # Add to Sqlite DB
+    streamer_id = message.tags['room-id']
+    chatter_id = message.tags['user-id']
+    timestamp = message.timestamp
+    #mesage.content
+    message.raw_data
+
+    
+    DBCursor.execute(
+        'REPLACE INTO ChatBookmarks(streamer_id, chatter_id, chat_id, chat_timestamp, chat_text, raw_chat) VALUES(?, ?, ?, ?, ?, ?)',
+        (streamer_id, chatter_id, chat_id, message.timestamp, message.content, message.raw_data))
+
+    DBConn.commit()
+
+    print('at the end of BookmarkChat')
+
+
+@eel.expose
+def UnbookmarkChat(chat_id):
+    DBCursor.execute(
+        'DELETE FROM ChatBookmarks WHERE chat_id =?', (chat_id, ))
+
+    DBConn.commit()
+
+    print('at the end of UnbookmarkChat')
 
 
 class Bot(commands.Bot):
@@ -26,6 +66,16 @@ class Bot(commands.Bot):
                          initial_channels=initial_channels)
 
         self.translator = googletrans.Translator()
+        #self.chats = collections.OrderedDict()
+
+    def addToChatDict(self, message):
+        chat_id = message.tags['id']
+        if chat_id in ChatDict:
+            return
+        if len(ChatDict) >= MAX_QUEUE_SIZE:
+            ChatDict.popitem(last=False)
+        ChatDict[chat_id] = message
+ 
 
     async def event_message(self, message):
         if message.author.name in ('c_rainbow_test', 'ssakdook', 'streamelements'):
@@ -33,6 +83,13 @@ class Bot(commands.Bot):
 
         eel.my_javascript_function(2, 4)
 
+
+        #print(message.tags)
+        #print(dir(message.tags))
+
+        chat_id = message.tags['id']
+        self.addToChatDict(message)
+        
         try:
             lang_code = langdetect.detect(message.content)
         except:
@@ -44,10 +101,10 @@ class Bot(commands.Bot):
         else:
             translated = message.content
 
-        eel.handle_new_chat(message.author.display_name, message.author.name, message.content, translated)
+        eel.handle_new_chat(message.author.display_name, message.author.name, message.content, translated, chat_id)
         #await message.channel.send('번역: ' + translated.text)
         
-
+    
 
 class EelOpener(threading.Thread):
     def run(self):
@@ -65,5 +122,7 @@ if __name__ == '__main__':
     oauth = read_oauth.GetOauthCode()
     bot = Bot('c_rainbow_test', oauth, ['c_rainbow'])
     bot.run()
+
+    DBConn.close()
 
     

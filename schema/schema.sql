@@ -25,13 +25,15 @@ CREATE TABLE "ChatBookmarks" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     "streamer_id" INTEGER NOT NULL,
     "chatter_id" INTEGER NOT NULL,
+    "chat_id" VARCHAR(255) UNIQUE NOT NULL,
     "chat_timestamp" TIMESTAMP NOT NULL,
     "chat_text" TEXT NOT NULL,
     "raw_chat" TEXT NOT NULL,  -- tags, text, etc 전부 포함
-    FOREIGN KEY ("streamer_id") REFERENCES TwitchUsers("twitch_id"),
-    FOREIGN KEY ("chatter_id") REFERENCES TwitchUsers("twitch_id")
+    -- FOREIGN KEY ("streamer_id") REFERENCES TwitchUsers("twitch_id"),
+    -- FOREIGN KEY ("chatter_id") REFERENCES TwitchUsers("twitch_id")
 );
 CREATE INDEX idx_streamer_id ON ChatBookmarks("streamer_id");
+CREATE INDEX idx_chatter_id ON ChatBookmarks("chatter_id");
 
 
 CREATE TABLE "UsernameChanges" (
@@ -40,7 +42,7 @@ CREATE TABLE "UsernameChanges" (
     "username" VARCHAR(255) NOT NULL,
     "display_name" VARCHAR(255) NOT NULL,
     "known_change_time" TIMESTAMP CURRENT_TIMESTAMP,
-    FOREIGN KEY ("user_id") REFERENCES TwitchUsers("twitch_id")
+    -- FOREIGN KEY ("user_id") REFERENCES TwitchUsers("twitch_id")
 );
 CREATE INDEX idx_user_id ON UsernameChanges("user_id");
 
