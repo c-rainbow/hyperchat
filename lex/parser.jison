@@ -1,4 +1,4 @@
-%%lex
+%lex
 
 %%
 
@@ -22,18 +22,17 @@
 \d+ return "NUMBER"
 \w+ return "WORD"
 
-<<EOF>>   { return 'EOF'; }
-
-%%
+<<EOF>>   return 'EOF'
 
 
 /lex
 
+%left AND
+%left OR
 
-grammar
-    : expr EOF
-        { return $1;}
-    ;
+%%
+
+
 
 expr
     : expr AND expr
@@ -54,7 +53,6 @@ expr
         {}
     ;
 
-
 chat_patterns
     : variables
         {}
@@ -64,7 +62,6 @@ chat_patterns
         {}
     ;
 
-
 variables
     : WORD
         {}
@@ -72,9 +69,8 @@ variables
         {}
     ;
 
-
 pattern_expr
-    :  LESS_THAN NUMBER WORD
+    : LESS_THAN NUMBER WORD
         {}
     | GREATER_THAN NUMBER WORD
         {}
