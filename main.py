@@ -15,6 +15,8 @@ import threading
 
 
 
+import username_history_manager as uhm
+
 MAX_QUEUE_SIZE = 2000
 
 #@eel.expose
@@ -66,6 +68,8 @@ class Bot(commands.Bot):
                          initial_channels=initial_channels)
 
         self.translator = googletrans.Translator()
+        self.uh_manager = uhm.UsernameHistoryManager()
+        
         #self.chats = collections.OrderedDict()
 
     def addToChatDict(self, message):
@@ -78,10 +82,13 @@ class Bot(commands.Bot):
  
 
     async def event_message(self, message):
-        if message.author.name in ('c_rainbow_test', 'ssakdook', 'streamelements'):
+        if message.author.name in ('ssakdook', 'streamelements'):
             return
 
-        eel.my_javascript_function(2, 4)
+        chatter = message.author
+        # Store user data into DB before further processing
+        self.uh_manager.CheckForUpdate(
+            chatter.id, chatter.name, chatter.display_name, message.timestamp)
 
 
         #print(message.tags)
@@ -120,7 +127,7 @@ if __name__ == '__main__':
 
     print('opening bot')
     oauth = read_oauth.GetOauthCode()
-    bot = Bot('c_rainbow_test', oauth, ['c_rainbow'])
+    bot = Bot('c_rainbow_test2', oauth, ['c_rainbow'])
     bot.run()
 
     DBConn.close()
