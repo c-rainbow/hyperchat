@@ -17,9 +17,9 @@
 "jamo-only" return "JAMO_ONLY"
 "(" return "LPAREN"
 ")" return "RPAREN"
-"<" return "LESS_THAN"
-">" return "GREATER_THAN"
-\d+ return "NUMBER"
+\d+"일"\s*"이하" return "LTOE"
+\d+"일"\s*"이상" return "GTOE"
+//\d+ return "NUMBER"
 \w+ return "WORD"
 
 <<EOF>>   return 'EOF'
@@ -30,48 +30,86 @@
 %left AND
 %left OR
 
+
+%{
+    function checkUsername(username){
+        console.log("in checkUsername");
+        return username;
+    }
+    function checkFollow(username){
+        console.log("in checkFollow");
+        return username;
+    }
+    function checkAccountCreation(username){
+        console.log("in checkAccountCreation");
+        return username;
+    }
+    function checkRank(username){
+        console.log("in checkRank");
+        return username;
+    }
+    function checkChatContent(username){
+        console.log("in checkChatContent");
+        return username;
+    }
+    function checkChatLength(username){
+        console.log("in checkChatLength");
+        return username;
+    }
+%}
+
+
+
+
 %%
 
-
+grammar
+    : expr EOF
+        { console.log($1); return $1;}
+    ;
 
 expr
     : expr AND expr
-        {}
+        { $$ = $1 && $3; }
     | expr OR expr
-        {}
+        { $$ = $1 || $3; }
     | USERNAME LPAREN variables RPAREN
-        {}
+        { $$ = checkUsername($3); }
     | FOLLOW LPAREN pattern_expr RPAREN
-        {}
+        { $$ = checkFollow($3); }
     | CREATION_DATE LPAREN pattern_expr RPAREN
-        {}
+        { $$ = checkAccountCreation($3); }
     | SPECIAL_RANK LPAREN variables RPAREN
-        {}
+        { $$ = checkRank($3); }
     | CHATTING LPAREN chat_patterns RPAREN
-        {}
+        { $$ = checkChatContent($3); }
     | CHATTING_LENGTH LPAREN pattern_expr RPAREN
-        {}
+        { $$ = checkChatLength($3); }
     ;
 
 chat_patterns
     : variables
-        {}
+        { $chat_patterns.push($1); }
     | EMOTE_ONLY COMMA variables
-        {}
+        { $chat_patterns.push("emote-only"); $chat_patterns.push(...$variables); }
     | JAMO_ONLY COMMA variables
-        {}
+        { $chat_patterns.push("jamo-only"); $chat_patterns.push(...$variables); }
     ;
 
 variables
     : WORD
-        {}
+        { $$ = [$1]; }
     | WORD COMMA variables
-        {}
+        { var rt = [$1]; rt.push(...$variables); $$ = rt; }
     ;
 
 pattern_expr
-    : LESS_THAN NUMBER WORD
-        {}
-    | GREATER_THAN NUMBER WORD
-        {}
+    : LTOE
+        { 
+            let days = $1.match(/\d+/);    
+            
+            console.log(days + "일 이하하하"); $$ = $1;
+            
+            
+        }
     ;
