@@ -2,7 +2,6 @@ import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-
 export async function getServerSideProps() {
   // Fetch data from external API
   //const res = await fetch(`https://.../data`)
@@ -10,10 +9,10 @@ export async function getServerSideProps() {
 
   // Pass data to the page via props
   return {
-    props: { 
-      hello: 'world'
-    }
-  }
+    props: {
+      hello: 'world',
+    },
+  };
 }
 
 function Next(props) {
@@ -23,17 +22,17 @@ function Next(props) {
       <Head>
         <title>Next - Nextron (with-typescript-tailwindcss)</title>
       </Head>
-      <div className='grid grid-col-1 text-2xl w-full text-center'>
-        <img className='ml-auto mr-auto' src='/images/logo.png' />
+      <div className="grid grid-col-1 text-2xl w-full text-center">
+        <img className="ml-auto mr-auto" src="/images/logo.png" />
         <span>{JSON.stringify(props)}</span>
       </div>
-      <div className='mt-1 w-full flex-wrap flex justify-center'>
-        <Link href='/home'>
-          <a className='btn-blue'>Go to home page</a>
+      <div className="mt-1 w-full flex-wrap flex justify-center">
+        <Link href="/home">
+          <a className="btn-blue">Go to home page</a>
         </Link>
       </div>
     </React.Fragment>
-  )
+  );
 }
 
-export default Next
+export default Next;
