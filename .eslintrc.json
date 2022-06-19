@@ -1,11 +1,12 @@
 {
     "env": {
         "browser": true,
+        "node": true,
         "es2021": true
     },
     "extends": [
         "plugin:react/recommended",
-        "google"
+        "eslint:recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -19,9 +20,6 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "trailingComma": "es5",
-        "tabWidth": 2,
-        "semi": true,
-        "singleQuote": true
+        "linebreak-style": 0
     }
 }

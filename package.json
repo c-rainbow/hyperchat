@@ -5,14 +5,15 @@
   "version": "1.0.0",
   "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
   "main": "app/background.js",
+  "license": "MIT",
   "scripts": {
     "dev": "nextron",
     "build": "nextron build",
     "postinstall": "electron-builder install-app-deps",
-    "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
-    "lint:check": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "format:check": "prettier --check main/**/*.ts renderer/**/*.tsx main/**/*.ts",
+    "format:write": "prettier --write main/**/*.ts renderer/**/*.tsx main/**/*.ts",
+    "lint:check": "eslint main/**/*.ts renderer/**/*.tsx main/**/*.ts",
+    "lint:fix": "eslint --fix main/**/*.ts renderer/**/*.tsx main/**/*.ts"
   },
   "dependencies": {
     "@types/tmi.js": "^1.8.1",
