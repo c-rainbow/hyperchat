@@ -1,9 +1,11 @@
 {
   "private": true,
-  "name": "my-nextron-app",
-  "description": "My application description",
-  "version": "1.0.0",
-  "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
+  "name": "hyperchat",
+  "description": "Twitch chat application with additional functionalities",
+  "version": "0.0.1",
+  "author": "Rainbow",
+  "homepage": "https://github.com/c-rainbow/hyperchat",
+  "repository": "github:c-rainbow/hyperchat",
   "main": "app/background.js",
   "license": "MIT",
   "scripts": {
@@ -17,7 +19,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@types/tmi.js": "^1.8.1",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
     "franc": "^6.0.0",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.8",
+    "@types/tmi.js": "^1.8.1",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "autoprefixer": "^10.4.7",

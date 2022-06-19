@@ -1,6 +1,6 @@
-appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+appId: com.example.hyperchat
+productName: Hyperchat
+copyright: Copyright © 2022 Rainbow
 directories:
   output: dist
   buildResources: resources
