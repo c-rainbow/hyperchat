@@ -1,0 +1,7 @@
+# output folders
+app/
+dist/
+.vscode/
+**/.next/
+**/*.json
+**/*.config.js
