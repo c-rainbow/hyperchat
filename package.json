@@ -13,7 +13,8 @@
     "format:check": "prettier --check main/**/*.ts renderer/**/*.tsx main/**/*.ts",
     "format:write": "prettier --write main/**/*.ts renderer/**/*.tsx main/**/*.ts",
     "lint:check": "eslint main/**/*.ts renderer/**/*.tsx main/**/*.ts",
-    "lint:fix": "eslint --fix main/**/*.ts renderer/**/*.tsx main/**/*.ts"
+    "lint:fix": "eslint --fix main/**/*.ts renderer/**/*.tsx main/**/*.ts",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@types/tmi.js": "^1.8.1",
@@ -35,6 +36,8 @@
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.30.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.2",
     "next": "^12.1.6",
     "nextron": "^8.1.0",
     "postcss": "^8.4.13",
