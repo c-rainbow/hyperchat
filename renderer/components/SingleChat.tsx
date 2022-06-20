@@ -9,7 +9,7 @@ export default function SingleChat({ userstate, message, translated }) {
     <div className="mt-1 ">
       <span className="mr-1 font-bold" style={{color: userstate.color ?? '#b22222'}}>{displayName}</span>
       <span className="mr-1">{message}</span>
-      <span className="mr-1">{translated}</span>
+      <span className="mr-2">{translated}</span>
     </div>
   );
 }
