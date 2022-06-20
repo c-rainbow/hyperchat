@@ -6,8 +6,8 @@ export default function SingleChat({ userstate, message, translated }) {
 
 
   return (
-    <div className="mt-1 w-full flex-wrap flex">
-      <span className="mr-1">{displayName}</span>
+    <div className="mt-1 ">
+      <span className="mr-1 font-bold" style={{color: userstate.color ?? '#b22222'}}>{displayName}</span>
       <span className="mr-1">{message}</span>
       <span className="mr-1">{translated}</span>
     </div>

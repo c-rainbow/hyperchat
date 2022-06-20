@@ -6,18 +6,41 @@ import { francAll } from 'franc';
 import { ipcRenderer } from 'electron';
 import SingleChat from '../components/SingleChat';
 
+var client: Client = null;
+
 function Home() {
 
   const [chatList, setChatList] = useState([]);
   const chatListRef = useRef(chatList);
+  const usernameRef = useRef();
+  const [currentChannel, setCurrentChannel] = useState<string>(null);
+
+  const switchChannel = async (e) => {
+    const channel = usernameRef.current?.value;
+    setCurrentChannel(channel);
+  };
 
   useEffect(() => {
-    const client = new Client({
-      channels: ['c_rainbow'],
+    if (client !== null) {
+      client.disconnect();
+      client = null;
+      setChatList([]);
+      chatListRef.current = [];
+    }
+
+    console.log('useEffect with current channel', currentChannel);
+
+    if (currentChannel === null) {
+      return;
+    }
+
+    client = new Client({
+      channels: [currentChannel],
     });
   
     client.connect();
     console.log('connected to client');
+  
   
     client.on('message', async (channel, userstate, message, self) => {
       console.log('channel:', channel);
@@ -44,7 +67,7 @@ function Home() {
       //const result = await fetch(`/api/user?message=${message}`);
       */
     });
-  }, []);
+  }, [currentChannel]);
 
   /*
   useEffect(
@@ -54,15 +77,20 @@ function Home() {
   */
 
   return (
-    <>
+    <>  
       <Head>
         <title>Twitch Chat Translator</title>
       </Head>
-      <div className="grid grid-col-1 text-2xl w-full text-center">
+      <div className="text-2xl w-full text-center">
         Chat
       </div>
-      <div className="grid grid-col-1 text-2xl w-full text-center">
-        <>{console.log(chatList)}
+      <div className="mt-2 w-full text-center grid justify-center text-black">
+        <input ref={usernameRef} type="text" className="block w-[200px] text-black" style={{ color:"black !important"}}/>
+        <button className="m-3 p-1 block border-solid border-2" onClick={switchChannel}>Go!</button>
+      </div>
+      <hr className="mt-2 mb-2" />
+      <div className="w-full h-[800px] overflow-y-scroll">
+        <>
         {chatList.map(
           singleChat  => {
             console.log(singleChat.userstate.id);
