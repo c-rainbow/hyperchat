@@ -52,7 +52,11 @@ function Home() {
       console.log(result);
 
       console.log('old list:', chatListRef.current);
-      const newList = [...chatListRef.current, { userstate, message, translated: result.text }];
+      let newList = [...chatListRef.current, { userstate, message, translated: result.text }];
+      // Keeps only the last 100 chats
+      if (newList.length > 100) {
+        newList = newList.slice(-100);
+      }
       console.log('new list:', newList);
       setChatList(newList);
       chatListRef.current = newList;
