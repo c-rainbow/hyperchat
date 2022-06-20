@@ -16,6 +16,7 @@ function Home() {
   const [currentChannel, setCurrentChannel] = useState<string>(null);
 
   const switchChannel = async (e) => {
+    e.preventDefault()
     const channel = usernameRef.current?.value;
     setCurrentChannel(channel);
   };
@@ -37,11 +38,11 @@ function Home() {
     client = new Client({
       channels: [currentChannel],
     });
-  
+
     client.connect();
     console.log('connected to client');
-  
-  
+
+
     client.on('message', async (channel, userstate, message, self) => {
       console.log('channel:', channel);
       console.log('userstate:', userstate);
@@ -60,7 +61,7 @@ function Home() {
       console.log('new list:', newList);
       setChatList(newList);
       chatListRef.current = newList;
-  
+
       /*
       const langDetected = francAll(message, {
         minLength: 2,
@@ -81,30 +82,30 @@ function Home() {
   */
 
   return (
-    <>  
+    <>
       <Head>
         <title>Twitch Chat Translator</title>
       </Head>
       <div className="text-2xl w-full text-center">
         Chat
       </div>
-      <div className="mt-2 w-full text-center grid justify-center text-black">
-        <input ref={usernameRef} type="text" className="block w-[200px] text-black" style={{ color:"black !important"}}/>
+      <form onSubmit={switchChannel} className="mt-2 w-full text-center grid justify-center text-black">
+        <input ref={usernameRef} type="text" className="block w-[200px] text-black" style={{ color: "black !important" }} />
         <button className="m-3 p-1 block border-solid border-2" onClick={switchChannel}>Go!</button>
-      </div>
+      </form>
       <hr className="mt-2 mb-2" />
       <div className="w-full h-[800px] overflow-y-scroll">
         <>
-        {chatList.map(
-          singleChat  => {
-            console.log(singleChat.userstate.id);
-            return <SingleChat
-              key={singleChat.userstate.id}
-              userstate={singleChat.userstate}
-              message={singleChat.message}
-              translated={singleChat.translated} />
-          }
-        )}</>
+          {chatList.map(
+            singleChat => {
+              console.log(singleChat.userstate.id);
+              return <SingleChat
+                key={singleChat.userstate.id}
+                userstate={singleChat.userstate}
+                message={singleChat.message}
+                translated={singleChat.translated} />
+            }
+          )}</>
       </div>
     </>
   );
