@@ -1,7 +1,7 @@
 import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
-import { translate } from './lib/translator';
+import { translate, translateToEngOrKor } from './lib/translator';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -35,5 +35,10 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('translate', async (event, line) => {
   const result = await translate(line);
+  return result;
+});
+
+ipcMain.handle('translateToEngOrKor', async (event, line) => {
+  const result = await translateToEngOrKor(line);
   return result;
 });

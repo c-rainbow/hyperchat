@@ -25,7 +25,7 @@ function Home() {
       console.log('message:', message);
       console.log('self:', self);
 
-      const result = await ipcRenderer.invoke('translate', message);
+      const result = await ipcRenderer.invoke('translateToEngOrKor', message);
       console.log(result);
 
       console.log('old list:', chatListRef.current);
@@ -33,14 +33,6 @@ function Home() {
       console.log('new list:', newList);
       setChatList(newList);
       chatListRef.current = newList;
-
-
-
-      //const newList = [...chatListRef.current, { userstate, message }];
-      //console.log('new list:', newList);
-      //setChatList(newList);
-      //console.log('new List set');
-
   
       /*
       const langDetected = francAll(message, {
