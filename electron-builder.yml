@@ -1,0 +1,12 @@
+appId: com.example.hyperchat
+productName: Hyperchat
+copyright: Copyright © 2022 Rainbow
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
