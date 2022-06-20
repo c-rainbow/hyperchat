@@ -1,6 +1,7 @@
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
+import { translate } from './lib/translator';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -29,4 +30,10 @@ if (isProd) {
 
 app.on('window-all-closed', () => {
   app.quit();
+});
+
+
+ipcMain.handle('translate', async (event, line) => {
+  const result = await translate(line);
+  return result;
 });
