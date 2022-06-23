@@ -105,47 +105,52 @@ function Home() {
               <ul className="menu menu-horizontal">
                 {/* Navbar menu content here. Separate definition for sidebar content */}
                 <li>
-                  <a onClick={() => alert('test 1')}>Do something 1</a>
+                  <a onClick={() => alert('config')}>Config</a>
                 </li>
                 <li>
-                  <a onClick={() => alert('test 2')}>Do something 2</a>
+                  <a onClick={() => alert('test 2')}>Login</a>
                 </li>
               </ul>
             </div>
           </div>
           {/* Page content here */}
-          <div className="text-2xl w-full text-center">Chat</div>
-          <form
-            onSubmit={switchChannel}
-            className="mt-2 w-full text-center grid justify-center"
-          >
-            <input
-              ref={usernameRef}
-              type="text"
-              className="block w-[200px] input input-bordered"
-            />
-            <button
-              className="btn m-3 p-1 block border-solid border-2"
-              onClick={switchChannel}
-            >
-              Go!
-            </button>
-          </form>
-          <div className="divider mt-2 mb-2">Chat</div>
-          <div className="w-full h-[800px] overflow-y-scroll">
-            <>
-              {chatList.map((singleChat) => {
-                console.log(singleChat.userstate.id);
-                return (
-                  <SingleChat
-                    key={singleChat.userstate.id}
-                    userstate={singleChat.userstate}
-                    message={singleChat.message}
-                    translated={singleChat.translated}
-                  />
-                );
-              })}
-            </>
+          <div className="content grid grid-cols-2 divide-x-2">
+            <div className="p-1">
+              <div className="text-2xl w-full text-center">Chat</div>
+              <form
+                onSubmit={switchChannel}
+                className="mt-2 w-full text-center grid justify-center"
+              >
+                <input
+                  ref={usernameRef}
+                  type="text"
+                  className="block w-[200px] input input-bordered"
+                />
+                <button
+                  className="btn m-3 p-1 block border-solid border-2"
+                  onClick={switchChannel}
+                >
+                  Go!
+                </button>
+              </form>
+              <div className="divider mt-2 mb-2">Chat</div>
+              <div className="w-full overflow-y-scroll">
+                <>
+                  {chatList.map((singleChat) => {
+                    console.log(singleChat.userstate.id);
+                    return (
+                      <SingleChat
+                        key={singleChat.userstate.id}
+                        userstate={singleChat.userstate}
+                        message={singleChat.message}
+                        translated={singleChat.translated}
+                      />
+                    );
+                  })}
+                </>
+              </div>
+            </div>
+            <div className="p-1">Menu comes here</div>
           </div>
         </div>
         <div className="drawer-side">
