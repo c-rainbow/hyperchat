@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Client } from 'tmi.js';
+import { ChatUserstate, Client } from 'tmi.js';
 import { francAll } from 'franc';
 import { ipcRenderer } from 'electron';
 import SingleChat from '../components/SingleChat';
 import Footer from '../components/Footer';
+import { ChatFragment } from '../../common/types';
 
 var client: Client = null;
 
@@ -42,7 +43,7 @@ function Home() {
     client.connect();
     console.log('connected to client');
 
-    client.on('message', async (channel, userstate, message, self) => {
+    client.on('message', async (channel, userstate: ChatUserstate, message, self) => {
       console.log('channel:', channel);
       console.log('userstate:', userstate);
       console.log('message:', message);
@@ -51,10 +52,14 @@ function Home() {
       const result = await ipcRenderer.invoke('translateToEngOrKor', message);
       console.log(result);
 
+      const fragments: ChatFragment[] = await ipcRenderer.invoke(
+          'getFragments', (userstate['room-id']), message, userstate['emotes'] ?? {});
+
       console.log('old list:', chatListRef.current);
+      console.log('fragments:', fragments);
       let newList = [
         ...chatListRef.current,
-        { userstate, message, translated: result.text },
+        { userstate, message, translated: result.text, fragments },
       ];
       // Keeps only the last 100 chats
       if (newList.length > 100) {
@@ -114,9 +119,11 @@ function Home() {
             </div>
           </div>
           {/* Page content here */}
-          <div className="content grid grid-cols-2 divide-x-2">
-            <div className="p-1">
-              <div className="text-2xl w-full text-center">Chat</div>
+          <div className="content flex">
+            <div className="flex-1 p-1 ">
+              <div className="text-2xl w-full text-center">
+                Enter the channel name
+              </div>
               <form
                 onSubmit={switchChannel}
                 className="mt-2 w-full text-center grid justify-center"
@@ -133,7 +140,9 @@ function Home() {
                   Go!
                 </button>
               </form>
-              <div className="divider mt-2 mb-2">Chat</div>
+              <div className="divider mt-2 mb-2">
+                {currentChannel ? `Current in channel ${currentChannel}` : "Chat not activated"}
+              </div>
               <div className="w-full overflow-y-scroll">
                 <>
                   {chatList.map((singleChat) => {
@@ -144,13 +153,14 @@ function Home() {
                         userstate={singleChat.userstate}
                         message={singleChat.message}
                         translated={singleChat.translated}
+                        fragments={singleChat.fragments}
                       />
                     );
                   })}
                 </>
               </div>
             </div>
-            <div className="p-1">Menu comes here</div>
+            <div className="flex-1 p-1">Menu comes here</div>
           </div>
         </div>
         <div className="drawer-side">

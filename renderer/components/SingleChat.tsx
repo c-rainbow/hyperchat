@@ -1,4 +1,6 @@
-export default function SingleChat({ userstate, message, translated }) {
+import { ChatFragment } from "../../common/types";
+
+export default function SingleChat({ userstate, message, translated, fragments }) {
   const displayName = userstate['display-name'];
 
   return (
@@ -9,7 +11,16 @@ export default function SingleChat({ userstate, message, translated }) {
       >
         {displayName}
       </span>
-      <span className="mr-1">{message}</span>
+      <span className="mr-1">
+        {fragments.map((fragment: ChatFragment) => {
+          if (fragment.emote !== undefined) {
+            return <img className="inline" src={fragment.emote.url} alt={fragment.text} />
+          }
+          else {
+            return fragment.text
+          }
+        })}
+      </span>
       <span className="mr-2">{translated}</span>
     </div>
   );

@@ -2,6 +2,7 @@ import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 import { translate, translateToEngOrKor } from './lib/translator';
+import { EmoteManager } from '../common/emotes';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -28,6 +29,8 @@ if (isProd) {
   }
 })();
 
+const emoteManager = new EmoteManager();
+
 app.on('window-all-closed', () => {
   app.quit();
 });
@@ -40,4 +43,10 @@ ipcMain.handle('translate', async (event, line) => {
 ipcMain.handle('translateToEngOrKor', async (event, line) => {
   const result = await translateToEngOrKor(line);
   return result;
+});
+
+ipcMain.handle('getFragments', async (event, channel: string, text: string, emotes: {[emoteId: string]: string[]}) => {
+  console.log('Inside getFragments');
+  const fragments = await emoteManager.convertTextToFragments(channel, text, emotes);
+  return fragments;
 });
