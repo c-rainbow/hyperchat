@@ -32,7 +32,6 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-
 ipcMain.handle('translate', async (event, line) => {
   const result = await translate(line);
   return result;

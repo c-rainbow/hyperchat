@@ -19,6 +19,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "daisyui": "^2.17.0",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
     "franc": "^6.0.0",
