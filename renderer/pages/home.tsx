@@ -7,6 +7,8 @@ import { ipcRenderer } from 'electron';
 import SingleChat from '../components/SingleChat';
 import Footer from '../components/Footer';
 import { ChatFragment } from '../../common/twitch-ext-emotes';
+import { useSelectedChatStore } from '../states';
+import SingleChatFragment from '../components/SingleChatFragment';
 
 var client: Client = null;
 
@@ -21,6 +23,8 @@ function Home() {
     const channel = usernameRef.current?.value;
     setCurrentChannel(channel);
   };
+
+  const { selectChat, user: selectedUser, chat: selectedChat } = useSelectedChatStore();
 
   useEffect(() => {
     if (client !== null) {
@@ -68,8 +72,8 @@ function Home() {
           { userstate, message, translated: result.text, fragments },
         ];
         // Keeps only the last 100 chats
-        if (newList.length > 100) {
-          newList = newList.slice(-100);
+        if (newList.length > 30) {
+          newList = newList.slice(-30);
         }
         console.log('new list:', newList);
         setChatList(newList);
@@ -88,7 +92,7 @@ function Home() {
   return (
     <>
       <Head>
-        <title>Twitch Chat Translator</title>
+        <title>HyperChat</title>
       </Head>
       <div className="drawer">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -112,7 +116,7 @@ function Home() {
                 </svg>
               </label>
             </div>
-            <div className="flex-1 px-2 mx-2 text-3xl">Chat Translator</div>
+            <div className="flex-1 px-2 mx-2 text-3xl">HyperChat</div>
             <div className="flex-none hidden md:block">
               <ul className="menu menu-horizontal">
                 {/* Navbar menu content here. Separate definition for sidebar content */}
@@ -169,7 +173,22 @@ function Home() {
                 </>
               </div>
             </div>
-            <div className="flex-1 p-1">Menu comes here</div>
+            <div className="flex-1 p-1">
+              <div className="hero min-h-screen bg-base-200">
+                <div className="hero-content text-center">
+                  <div className="max-w-md">
+                    <h1 className="text-5xl font-bold">{selectedUser?.['display-name']}</h1>
+                    <p className="pt-6 pb-2">
+                      {selectedChat?.map(fragment => <SingleChatFragment fragment={fragment}/>)}
+                    </p>
+                    <p className="pt-2 pb-6">
+                      
+                    </p>
+                    <button className="btn btn-primary">Learn more</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className="drawer-side">
