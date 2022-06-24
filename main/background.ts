@@ -1,8 +1,16 @@
 import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
-import { EmoteParser, TwitchEmoteTags } from '../common/twitch-ext-emotes';
+import {
+  ChatFragment,
+  EmoteParser,
+  TwitchEmoteTags,
+} from '../common/twitch-ext-emotes';
 import { createWindow } from './helpers';
-import { translate, translateToEngOrKor } from './lib/translator';
+import {
+  translate,
+  translateToEngOrKor,
+  translateToEngOrKorFragments,
+} from './lib/translator';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -44,6 +52,14 @@ ipcMain.handle('translateToEngOrKor', async (event, line) => {
   const result = await translateToEngOrKor(line);
   return result;
 });
+
+ipcMain.handle(
+  'translateFragments',
+  async (event, fragments: ChatFragment[]) => {
+    const result = await translateToEngOrKorFragments(fragments);
+    return result;
+  }
+);
 
 ipcMain.handle(
   'getFragments',

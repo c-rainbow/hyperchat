@@ -3,17 +3,19 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { ChatUserstate, Client } from 'tmi.js';
 import { francAll } from 'franc';
-import { ipcRenderer } from 'electron';
+import { ipcMain, ipcRenderer } from 'electron';
 import SingleChat from '../components/SingleChat';
 import Footer from '../components/Footer';
 import { ChatFragment } from '../../common/twitch-ext-emotes';
 import { useSelectedChatStore } from '../states';
 import SingleChatFragment from '../components/SingleChatFragment';
+import { ChatMessageType, TranslationResult } from '../../common/types';
+import { ChatMessage } from '../lib/message';
 
 var client: Client = null;
 
 function Home() {
-  const [chatList, setChatList] = useState([]);
+  const [chatList, setChatList] = useState<ChatMessageType[]>([]);
   const chatListRef = useRef(chatList);
   const usernameRef = useRef<HTMLInputElement>();
   const [currentChannel, setCurrentChannel] = useState<string>(null);
@@ -24,7 +26,7 @@ function Home() {
     setCurrentChannel(channel);
   };
 
-  const { selectChat, user: selectedUser, chat: selectedChat } = useSelectedChatStore();
+  const { selectChat, chat: selectedChat } = useSelectedChatStore();
 
   useEffect(() => {
     if (client !== null) {
@@ -55,9 +57,6 @@ function Home() {
         console.log('message:', message);
         console.log('self:', self);
 
-        const result = await ipcRenderer.invoke('translateToEngOrKor', message);
-        console.log(result);
-
         const fragments: ChatFragment[] = await ipcRenderer.invoke(
           'getFragments',
           userstate['room-id'],
@@ -65,11 +64,17 @@ function Home() {
           userstate['emotes'] || {}
         );
 
-        console.log('old list:', chatListRef.current);
-        console.log('fragments:', fragments);
+        const translation: TranslationResult = await ipcRenderer.invoke(
+          'translateFragments',
+          fragments
+        );
+        // console.log(translationResult);
+
+        // console.log('old list:', chatListRef.current);
+        // console.log('fragments:', fragments);
         let newList = [
           ...chatListRef.current,
-          { userstate, message, translated: result.text, fragments },
+          new ChatMessage(channel, userstate, message, fragments, translation),
         ];
         // Keeps only the last 100 chats
         if (newList.length > 30) {
@@ -163,10 +168,7 @@ function Home() {
                     return (
                       <SingleChat
                         key={singleChat.userstate.id}
-                        userstate={singleChat.userstate}
-                        message={singleChat.message}
-                        translated={singleChat.translated}
-                        fragments={singleChat.fragments}
+                        chat={singleChat}
                       />
                     );
                   })}
@@ -177,12 +179,16 @@ function Home() {
               <div className="hero min-h-screen bg-base-200">
                 <div className="hero-content text-center">
                   <div className="max-w-md">
-                    <h1 className="text-5xl font-bold">{selectedUser?.['display-name']}</h1>
+                    <h1 className="text-5xl font-bold">
+                      {selectedChat?.displayName}
+                    </h1>
                     <p className="pt-6 pb-2">
-                      {selectedChat?.map(fragment => <SingleChatFragment fragment={fragment}/>)}
+                      {selectedChat?.fragments.map((fragment) => (
+                        <SingleChatFragment fragment={fragment} />
+                      ))}
                     </p>
                     <p className="pt-2 pb-6">
-                      
+                      Translation: {selectedChat?.translation?.text}
                     </p>
                     <button className="btn btn-primary">Learn more</button>
                   </div>
