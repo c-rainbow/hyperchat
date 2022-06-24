@@ -2,7 +2,7 @@ import { EmoteManager } from "./manager";
 import { ChatFragment, TwitchEmote, TwitchEmoteTags } from './types';
 
 
-function populuateTwitchEmotesFromTags(
+function populateTwitchEmotesFromTags(
     message: string, twitchEmoteTags: TwitchEmoteTags): Map<string, TwitchEmote> {
   const twitchEmotes = new Map<string, TwitchEmote>();  // name to ID
   for(const [emoteId, ranges] of Object.entries(twitchEmoteTags)) {
@@ -15,7 +15,7 @@ function populuateTwitchEmotesFromTags(
       source: 'twitch',
       id: emoteId,
       text: name,
-      url: `https://static-cdn.jtvnw.net/emoticons/v1/${emoteId}/1.0`
+      url: `https://static-cdn.jtvnw.net/emoticons/v2/${emoteId}/default/light/1.0`
     });
   }
 
@@ -33,7 +33,7 @@ export class EmoteParser {
   async parse(
       channelId: string, message: string, emoteTags: TwitchEmoteTags = {}): Promise<ChatFragment[]> {
     // Parse twitch emotes first
-    const twitchEmotes = populuateTwitchEmotesFromTags(message, emoteTags);
+    const twitchEmotes = populateTwitchEmotesFromTags(message, emoteTags);
 
     // Split and sanitize texts.
     // This is an additional safety check. Twitch already trims extra spaces in the message.
