@@ -1,8 +1,8 @@
 import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
+import { EmoteParser, TwitchEmoteTags } from '../common/twitch-ext-emotes';
 import { createWindow } from './helpers';
 import { translate, translateToEngOrKor } from './lib/translator';
-import { EmoteManager } from '../common/emotes';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -29,7 +29,7 @@ if (isProd) {
   }
 })();
 
-const emoteManager = new EmoteManager();
+const emoteParser = new EmoteParser();
 
 app.on('window-all-closed', () => {
   app.quit();
@@ -45,8 +45,15 @@ ipcMain.handle('translateToEngOrKor', async (event, line) => {
   return result;
 });
 
-ipcMain.handle('getFragments', async (event, channel: string, text: string, emotes: {[emoteId: string]: string[]}) => {
-  console.log('Inside getFragments');
-  const fragments = await emoteManager.convertTextToFragments(channel, text, emotes);
-  return fragments;
-});
+ipcMain.handle(
+  'getFragments',
+  async (
+    event,
+    channelId: string,
+    message: string,
+    emoteTags: TwitchEmoteTags
+  ) => {
+    const fragments = await emoteParser.parse(channelId, message, emoteTags);
+    return fragments;
+  }
+);

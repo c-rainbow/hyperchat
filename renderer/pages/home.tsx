@@ -6,7 +6,7 @@ import { francAll } from 'franc';
 import { ipcRenderer } from 'electron';
 import SingleChat from '../components/SingleChat';
 import Footer from '../components/Footer';
-import { ChatFragment } from '../../common/types';
+import { ChatFragment } from '../../common/twitch-ext-emotes';
 
 var client: Client = null;
 
@@ -43,32 +43,39 @@ function Home() {
     client.connect();
     console.log('connected to client');
 
-    client.on('message', async (channel, userstate: ChatUserstate, message, self) => {
-      console.log('channel:', channel);
-      console.log('userstate:', userstate);
-      console.log('message:', message);
-      console.log('self:', self);
+    client.on(
+      'message',
+      async (channel, userstate: ChatUserstate, message, self) => {
+        console.log('channel:', channel);
+        console.log('userstate:', userstate);
+        console.log('message:', message);
+        console.log('self:', self);
 
-      const result = await ipcRenderer.invoke('translateToEngOrKor', message);
-      console.log(result);
+        const result = await ipcRenderer.invoke('translateToEngOrKor', message);
+        console.log(result);
 
-      const fragments: ChatFragment[] = await ipcRenderer.invoke(
-          'getFragments', (userstate['room-id']), message, userstate['emotes'] ?? {});
+        const fragments: ChatFragment[] = await ipcRenderer.invoke(
+          'getFragments',
+          userstate['room-id'],
+          message,
+          userstate['emotes'] || {}
+        );
 
-      console.log('old list:', chatListRef.current);
-      console.log('fragments:', fragments);
-      let newList = [
-        ...chatListRef.current,
-        { userstate, message, translated: result.text, fragments },
-      ];
-      // Keeps only the last 100 chats
-      if (newList.length > 100) {
-        newList = newList.slice(-100);
+        console.log('old list:', chatListRef.current);
+        console.log('fragments:', fragments);
+        let newList = [
+          ...chatListRef.current,
+          { userstate, message, translated: result.text, fragments },
+        ];
+        // Keeps only the last 100 chats
+        if (newList.length > 100) {
+          newList = newList.slice(-100);
+        }
+        console.log('new list:', newList);
+        setChatList(newList);
+        chatListRef.current = newList;
       }
-      console.log('new list:', newList);
-      setChatList(newList);
-      chatListRef.current = newList;
-    });
+    );
   }, [currentChannel]);
 
   /*
@@ -141,7 +148,9 @@ function Home() {
                 </button>
               </form>
               <div className="divider mt-2 mb-2">
-                {currentChannel ? `Current in channel ${currentChannel}` : "Chat not activated"}
+                {currentChannel
+                  ? `Current in channel ${currentChannel}`
+                  : 'Chat not activated'}
               </div>
               <div className="w-full overflow-y-scroll">
                 <>
@@ -176,7 +185,7 @@ function Home() {
           </ul>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

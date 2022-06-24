@@ -10,19 +10,3 @@ export interface TranslationResult {
   translations: [];
   raw: [];
 }
-
-
-export type EmoteSource = 'twitch' | 'bttv' | 'ffz' | '7tv';
-
-export interface Emote {
-  source: EmoteSource;  // From which emote provider?
-  id: string;  // provider-specific unique ID 
-  text: string;  //  text of the emote (ex: "BibleThump")
-  url: string;  // URL of the emote pic
-}
-
-
-export interface ChatFragment {
-  text: string;
-  emote: Emote;
-}
