@@ -23,6 +23,10 @@ export class ChatMessage implements ChatMessageType {
     this.translation = translation;
   }
 
+  get uuid() {
+    return this.userstate.id;
+  }
+
   get username() {
     return this.userstate.username;
   }
@@ -31,11 +35,15 @@ export class ChatMessage implements ChatMessageType {
     return this.userstate['display-name'];
   }
 
+  get color() {
+    return this.userstate.color;
+  }
+
   get fullName() {
-    const username = this.username.toLocaleUpperCase();
-    const displayName = this.displayName.toLocaleUpperCase();
-    if (username === displayName) {
-      return displayName;
+    const usernameUpper = this.username.toLocaleUpperCase();
+    const displayNameUpper = this.displayName.toLocaleUpperCase();
+    if (usernameUpper === displayNameUpper) {
+      return this.displayName;
     }
     return `${this.displayName}(${this.username})`;
   }

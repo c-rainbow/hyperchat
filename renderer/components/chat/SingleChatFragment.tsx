@@ -1,4 +1,4 @@
-import { ChatFragment } from '../../common/twitch-ext-emotes/types';
+import { ChatFragment } from '../../../common/twitch-ext-emotes/types';
 
 export interface SingleChatFragmentPropType {
   fragment: ChatFragment;

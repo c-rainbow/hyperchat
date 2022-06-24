@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { ChatUserstate, Client } from 'tmi.js';
-import { francAll } from 'franc';
-import { ipcMain, ipcRenderer } from 'electron';
-import SingleChat from '../components/SingleChat';
+import { ipcRenderer } from 'electron';
+import SingleChat from '../components/chat/SingleChat';
 import Footer from '../components/Footer';
 import { ChatFragment } from '../../common/twitch-ext-emotes';
 import { useSelectedChatStore } from '../states';
-import SingleChatFragment from '../components/SingleChatFragment';
+import SingleChatFragment from '../components/chat/SingleChatFragment';
 import { ChatMessageType, TranslationResult } from '../../common/types';
 import { ChatMessage } from '../lib/message';
+import ChatList from '../components/chat/ChatList';
 
 var client: Client = null;
 
@@ -161,19 +160,7 @@ function Home() {
                   ? `Current in channel ${currentChannel}`
                   : 'Chat not activated'}
               </div>
-              <div className="w-full overflow-y-scroll">
-                <>
-                  {chatList.map((singleChat) => {
-                    console.log(singleChat.userstate.id);
-                    return (
-                      <SingleChat
-                        key={singleChat.userstate.id}
-                        chat={singleChat}
-                      />
-                    );
-                  })}
-                </>
-              </div>
+              <ChatList chatList={chatList} />
             </div>
             <div className="flex-1 p-1">
               <div className="hero min-h-screen bg-base-200">

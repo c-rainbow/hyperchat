@@ -10,9 +10,11 @@ export interface ChatMessageType {
   translation?: TranslationResult;
 
   // Wrapper for userstate properties
-  username?: string;
-  displayName?: string;
-  channelId?: string;
+  uuid: string;
+  username: string;
+  displayName: string;
+  channelId: string;
+  color?: string;
   emotes: TwitchEmoteTags
 
   // Compound properties
