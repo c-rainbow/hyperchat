@@ -2,6 +2,9 @@ import { ChatUserstate } from 'tmi.js';
 import { ChatFragment, TwitchEmoteTags } from './twitch-ext-emotes/types';
 
 
+export type IpcEventChannels = 'translate' | 'translateAuto';
+
+
 export interface ChatMessageType {
   channel: string;  // Channel name (streamer's username)
   userstate: ChatUserstate;

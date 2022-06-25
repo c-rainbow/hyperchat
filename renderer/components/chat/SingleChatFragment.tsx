@@ -1,12 +1,10 @@
 import { ChatFragment } from '../../../common/twitch-ext-emotes/types';
 
-export interface SingleChatFragmentPropType {
+interface PropType {
   fragment: ChatFragment;
 }
 
-export default function SingleChatFragment({
-  fragment,
-}: SingleChatFragmentPropType) {
+export default function SingleChatFragment({ fragment }: PropType) {
   if (fragment.emote) {
     return (
       <img className="inline" src={fragment.emote.url} alt={fragment.text} />

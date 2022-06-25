@@ -21,31 +21,48 @@ function Home() {
 
   const switchChannel = async (e) => {
     e.preventDefault();
+    if (!currentChannel) {
+      ipcRenderer.send('chat.part', currentChannel);
+      console.log('Parted channel', currentChannel);
+    }
     const channel = usernameRef.current?.value;
+
+    ipcRenderer.send('chat.join', channel);
     setCurrentChannel(channel);
+    console.log('Joined channel', channel);
   };
 
   const { selectChat, chat: selectedChat } = useSelectedChatStore();
 
   useEffect(() => {
-    if (client !== null) {
-      client.disconnect();
-      client = null;
-      setChatList([]);
-      chatListRef.current = [];
-    }
+    ipcRenderer.on('chat.new_message', async (event, channel, chatMessage) => {
+      console.log('channel:', channel);
+      console.log('chatMessage:', chatMessage);
 
-    console.log('useEffect with current channel', currentChannel);
+      let newList = [
+        ...chatListRef.current,
+        chatMessage,
+      ];
 
+      // Keeps only the last 30 chats
+      if (newList.length > 30) {
+        newList = newList.slice(-30);
+      }
+      console.log('new list:', newList);
+      setChatList(newList);
+      chatListRef.current = newList;
+    });
+    console.log('ipc Renderer on');
+  }, []);
+
+  /*
+  useEffect(() => {
+    
     if (currentChannel === null) {
       return;
     }
 
-    client = new Client({
-      channels: [currentChannel],
-    });
-
-    client.connect();
+        client.connect();
     console.log('connected to client');
 
     client.on(
@@ -56,7 +73,7 @@ function Home() {
         console.log('message:', message);
         console.log('self:', self);
 
-        const fragments: ChatFragment[] = await ipcRenderer.invoke(
+        const fragments: ChatFragment[] = [];/*await ipcRenderer.invoke(
           'getFragments',
           userstate['room-id'],
           message,
@@ -85,6 +102,7 @@ function Home() {
       }
     );
   }, [currentChannel]);
+  */
 
   /*
   useEffect(

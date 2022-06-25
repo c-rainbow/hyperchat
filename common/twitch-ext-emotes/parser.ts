@@ -23,7 +23,12 @@ function populateTwitchEmotesFromTags(
 }
 
 
-export class EmoteParser {
+export interface IEmoteParser {
+  parse(channelId: string, message: string, emoteTags: TwitchEmoteTags): Promise<ChatFragment[]>;
+}
+
+
+export class EmoteParser implements IEmoteParser {
   private _manager: EmoteManager;
 
   constructor() {
@@ -33,7 +38,7 @@ export class EmoteParser {
   async parse(
       channelId: string, message: string, emoteTags: TwitchEmoteTags = {}): Promise<ChatFragment[]> {
     // Parse twitch emotes first
-    const twitchEmotes = populateTwitchEmotesFromTags(message, emoteTags);
+    const twitchEmotes = populateTwitchEmotesFromTags(message, emoteTags || {});
 
     // Split and sanitize texts.
     // This is an additional safety check. Twitch already trims extra spaces in the message.
