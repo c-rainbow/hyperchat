@@ -35,7 +35,7 @@ if (isProd) {
   }
 
   chatManager = new ChatManager(
-      mainWindow.webContents.send, new Client({}), defaultEmoteParser, defaultTranslator);
+      mainWindow, new Client({}), defaultEmoteParser, defaultTranslator);
   await chatManager.connect();
 
   // Add event handlers

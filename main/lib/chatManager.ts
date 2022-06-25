@@ -3,6 +3,7 @@ import { ChatMessageType } from '../../common/types';
 import { IEmoteParser } from '../../common/twitch-ext-emotes';
 import { ITranslator } from "./translator";
 import { getFullUserName, getTextMessage } from "../utils/messages";
+import { BrowserWindow } from 'electron';
 
 
 // TODO: Get this value from config
@@ -25,14 +26,16 @@ export interface IChatManager {
  * Connect to Twitch IRC server and stores all chats
  */
 export class ChatManager implements IChatManager {
-  private _sendFunction: SendFunctionType;
+  //private _sendFunction: SendFunctionType;
+  private _win: BrowserWindow;
   private _ircClient: Client;
   private _emoteParser: IEmoteParser;
   private _translator: ITranslator;
   private _messageList: Map<string, ChatMessageType[]>;
 
-  constructor(sendFunction: SendFunctionType, ircClient: Client, emoteParser: IEmoteParser, translator: ITranslator) {
-    this._sendFunction = sendFunction;
+  constructor(win: BrowserWindow, ircClient: Client, emoteParser: IEmoteParser, translator: ITranslator) {
+    //this._sendFunction = sendFunction;
+    this._win = win;
 
     this._ircClient = ircClient;
     this._emoteParser = emoteParser;
@@ -75,7 +78,9 @@ export class ChatManager implements IChatManager {
     }
     oldList.push(chatMessage);
     // Send the last n chats to the frontend
-    this._sendFunction('chat.new_message', channel, chatMessage);
+    console.log("channel:", channel);
+    //console.log('SendFunction:', this._sendFunction);
+    this._win.webContents.send('chat.new_message', channel, chatMessage);
     console.log('Send function chat.new_message');
   }
   
@@ -84,7 +89,7 @@ export class ChatManager implements IChatManager {
     const channelId = userstate["room-id"];
     const fragments = await this._emoteParser.parse(channelId, message, userstate.emotes);
     const username = userstate.username;
-    const displayName = userstate.displayName;
+    const displayName = userstate["display-name"];
     const emotes = userstate.emotes || {};
     const textMessage = getTextMessage(fragments);
     const translation = await this._translator.translateAuto(textMessage);

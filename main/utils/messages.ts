@@ -5,6 +5,10 @@ import { ChatFragment } from "../../common/twitch-ext-emotes";
 
 
 export function getFullUserName(username: string, displayName: string) {
+  if (!displayName) {
+    return username;
+  }
+
   if (username.toLocaleUpperCase() === displayName.toLocaleUpperCase()) {
     return displayName;
   }
