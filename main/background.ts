@@ -4,6 +4,7 @@ import { Client } from 'tmi.js';
 import { createWindow } from './helpers';
 import { addIpcHandlers } from './ipcHandlers';
 import { ChatManager } from './lib/chatManager';
+import defaultChatMemoManager from './lib/chatMemoManager';
 import defaultEmoteParser from './lib/emoteParser';
 import defaultTranslator from './lib/translator';
 
@@ -39,7 +40,7 @@ if (isProd) {
   await chatManager.connect();
 
   // Add event handlers
-  addIpcHandlers(ipcMain, chatManager);
+  addIpcHandlers(ipcMain, chatManager, defaultChatMemoManager);
   console.log('App is ready');
 })();
 

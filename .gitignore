@@ -131,3 +131,6 @@ dist
 
 # Electron build folder
 app
+
+# DB files
+main/db/*.db

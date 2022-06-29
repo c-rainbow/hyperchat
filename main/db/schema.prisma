@@ -1,0 +1,34 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./chats.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model TwitchUser {
+  id Int @id @default(autoincrement())
+  // Numeric ID for Twitch
+  twitchId String @unique
+  username String
+  displayName String
+}
+
+model ChatBookmark {
+  id Int @id @default(autoincrement())
+  // Numeric Twitch ID of the streamer
+  streamerId String
+  // Numeric Twitch ID of the chatter
+  chatterId String
+  // Chat's UUID
+  chatId String @unique
+  // Chat text
+  text String
+  // Raw IRC chat text
+  raw String
+  // Timestamp of chat
+  chattedAt DateTime
+  // Timestamp of bookmark
+  bookmarkedAt DateTime @default(now())
+}
