@@ -8,7 +8,6 @@ import defaultChatMemoManager from './lib/chatMemoManager';
 import defaultEmoteParser from './lib/emoteParser';
 import defaultTranslator from './lib/translator';
 
-
 let chatManager: ChatManager = null;
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
@@ -36,14 +35,17 @@ if (isProd) {
   }
 
   chatManager = new ChatManager(
-      mainWindow, new Client({}), defaultEmoteParser, defaultTranslator);
+    mainWindow,
+    new Client({}),
+    defaultEmoteParser,
+    defaultTranslator
+  );
   await chatManager.connect();
 
   // Add event handlers
   addIpcHandlers(ipcMain, chatManager, defaultChatMemoManager);
   console.log('App is ready');
 })();
-
 
 app.on('window-all-closed', async () => {
   await chatManager.disconnect();

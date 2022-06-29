@@ -5,7 +5,6 @@ import { ChatMessageType } from '../../../common/types';
 import { useState } from 'react';
 import { ipcRenderer } from 'electron';
 
-
 type SingleChatPropType = {
   chat: ChatMessageType;
 };
@@ -18,8 +17,7 @@ export default function SingleChat({ chat }: SingleChatPropType) {
     // TODO: network call or IPC call
     if (isMemoedChat) {
       ipcRenderer.send('chat.unstar', chat.uuid);
-    }
-    else {
+    } else {
       ipcRenderer.send('chat.star', chat);
     }
     setIsMemoedChat(!isMemoedChat);

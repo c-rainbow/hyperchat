@@ -1,26 +1,31 @@
-import { ChatUserstate, Client } from "tmi.js";
+import { ChatUserstate, Client } from 'tmi.js';
 import { ChatMessageType } from '../../common/types';
 import { IEmoteParser } from '../../common/twitch-ext-emotes';
-import { ITranslator } from "./translator";
-import { getFullUserName, getTextMessage } from "../utils/messages";
+import { ITranslator } from './translator';
+import { getFullUserName, getTextMessage } from '../utils/messages';
 import { BrowserWindow } from 'electron';
-
 
 // TODO: Get this value from config
 const MAX_CHATS_FRONTEND = 100;
 
 type SendFunctionType = (channel: string, ...args: any[]) => void;
 
-
 export interface IChatManager {
   connect: () => void;
   join: (channel: string) => void;
   part: (channel: string) => void;
   disconnect: () => void;
-  handleMessage: (channel: string, userstate: ChatUserstate, message: string) => void;
-  makeChatMessage: (channel: string, userstate: ChatUserstate, message: string) => Promise<ChatMessageType>;
+  handleMessage: (
+    channel: string,
+    userstate: ChatUserstate,
+    message: string
+  ) => void;
+  makeChatMessage: (
+    channel: string,
+    userstate: ChatUserstate,
+    message: string
+  ) => Promise<ChatMessageType>;
 }
-
 
 /**
  * Connect to Twitch IRC server and stores all chats
@@ -33,7 +38,12 @@ export class ChatManager implements IChatManager {
   private _translator: ITranslator;
   private _messageList: Map<string, ChatMessageType[]>;
 
-  constructor(win: BrowserWindow, ircClient: Client, emoteParser: IEmoteParser, translator: ITranslator) {
+  constructor(
+    win: BrowserWindow,
+    ircClient: Client,
+    emoteParser: IEmoteParser,
+    translator: ITranslator
+  ) {
     //this._sendFunction = sendFunction;
     this._win = win;
 
@@ -58,7 +68,7 @@ export class ChatManager implements IChatManager {
 
   async part(channel: string) {
     console.log('Parting', channel);
-    await this._ircClient.part(channel)
+    await this._ircClient.part(channel);
     console.log('Parted', channel);
   }
 
@@ -66,30 +76,41 @@ export class ChatManager implements IChatManager {
     await this._ircClient.disconnect();
   }
 
-  async handleMessage(channel: string, userstate: ChatUserstate, message: string) {
+  async handleMessage(
+    channel: string,
+    userstate: ChatUserstate,
+    message: string
+  ) {
     const chatMessage = await this.makeChatMessage(channel, userstate, message);
     console.log('chat message in handle message:', chatMessage);
 
     // Append to the chat list for the channel
-    let oldList = this._messageList.get(channel)
+    let oldList = this._messageList.get(channel);
     if (!oldList) {
       oldList = [];
       this._messageList.set(channel, oldList);
     }
     oldList.push(chatMessage);
     // Send the last n chats to the frontend
-    console.log("channel:", channel);
+    console.log('channel:', channel);
     //console.log('SendFunction:', this._sendFunction);
     this._win.webContents.send('chat.new_message', channel, chatMessage);
     console.log('Send function chat.new_message');
   }
-  
+
   async makeChatMessage(
-      channel: string, userstate: ChatUserstate, message: string): Promise<ChatMessageType> {
-    const channelId = userstate["room-id"];
-    const fragments = await this._emoteParser.parse(channelId, message, userstate.emotes);
+    channel: string,
+    userstate: ChatUserstate,
+    message: string
+  ): Promise<ChatMessageType> {
+    const channelId = userstate['room-id'];
+    const fragments = await this._emoteParser.parse(
+      channelId,
+      message,
+      userstate.emotes
+    );
     const username = userstate.username;
-    const displayName = userstate["display-name"];
+    const displayName = userstate['display-name'];
     const emotes = userstate.emotes || {};
     const textMessage = getTextMessage(fragments);
     const translation = await this._translator.translateAuto(textMessage);
@@ -108,6 +129,6 @@ export class ChatManager implements IChatManager {
       emotes,
       textMessage,
       isEmoteOnly: emotes === {},
-    }
+    };
   }
 }

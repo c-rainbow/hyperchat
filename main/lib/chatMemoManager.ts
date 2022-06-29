@@ -1,17 +1,15 @@
 /**
  * Manager of starred chats
  */
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 import { ChatMessageType } from '../../common/types';
 
-
 export interface IChatMemoManager {
-  starChat: (chat:ChatMessageType) => Promise<void>;
+  starChat: (chat: ChatMessageType) => Promise<void>;
   unstarChat: (chatId: string) => Promise<void>;
 }
 
 export class ChatMemoManager {
-
   private _prisma: PrismaClient;
 
   constructor() {
@@ -20,7 +18,7 @@ export class ChatMemoManager {
 
   async starChat(chat: ChatMessageType) {
     const chatDatetime = new Date(chat.userstate['tmi-sent-ts']);
-    console.log(chatDatetime, chat.userstate['tmi-sent-ts'])
+    console.log(chatDatetime, chat.userstate['tmi-sent-ts']);
     await this._prisma.chatBookmark.upsert({
       where: {
         chatId: chat.uuid,
@@ -33,16 +31,15 @@ export class ChatMemoManager {
         raw: chat.textMessage,
         chattedAt: new Date(parseInt(chat.userstate['tmi-sent-ts'])),
       },
-      update: {}
+      update: {},
     });
   }
 
   async unstarChat(chatId: string) {
     await this._prisma.chatBookmark.delete({
-      where: { chatId }
+      where: { chatId },
     });
   }
 }
-
 
 export default new ChatMemoManager();

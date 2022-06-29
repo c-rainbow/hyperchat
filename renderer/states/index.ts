@@ -1,14 +1,12 @@
 import create from 'zustand';
 import { ChatMessageType } from '../../common/types';
 
-
 export interface ChatListState {
   chats: ChatMessageType[];
   maxSize: number;
   setMaxSize: (newSize: number) => void;
   addChat: (newChat: ChatMessageType) => void;
 }
-
 
 export const useChatListStore = create<ChatListState>((set, get) => ({
   chats: [],
@@ -22,7 +20,7 @@ export const useChatListStore = create<ChatListState>((set, get) => ({
       currentChats = currentChats.slice(-newSize);
     }
 
-    set( { maxSize: newSize, chats: currentChats });
+    set({ maxSize: newSize, chats: currentChats });
   },
   addChat: (newChat: ChatMessageType) => {
     const maxSize = get().maxSize;
@@ -33,9 +31,8 @@ export const useChatListStore = create<ChatListState>((set, get) => ({
     }
 
     set({ chats: newChats });
-  }
+  },
 }));
-
 
 export interface SelectedChatState {
   chat?: ChatMessageType;

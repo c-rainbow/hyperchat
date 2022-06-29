@@ -2,13 +2,15 @@ import { ChatMessageType } from '../common/types';
 import { IChatManager } from './lib/chatManager';
 import { IChatMemoManager } from './lib/chatMemoManager';
 
-
 /**
- * 
+ *
  * @param ipcMain Electron's IpcMain object
  */
-export function addIpcHandlers(ipcMain: Electron.IpcMain, chatManager: IChatManager, chatMemoManager: IChatMemoManager) {
-
+export function addIpcHandlers(
+  ipcMain: Electron.IpcMain,
+  chatManager: IChatManager,
+  chatMemoManager: IChatMemoManager
+) {
   ipcMain.on('ping', async (event, message: string) => {
     console.log('Ping message:', message);
   });

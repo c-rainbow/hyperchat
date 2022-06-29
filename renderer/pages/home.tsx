@@ -39,10 +39,7 @@ function Home() {
       console.log('channel:', channel);
       console.log('chatMessage:', chatMessage);
 
-      let newList = [
-        ...chatListRef.current,
-        chatMessage,
-      ];
+      let newList = [...chatListRef.current, chatMessage];
 
       // Keeps only the last 30 chats
       if (newList.length > 30) {

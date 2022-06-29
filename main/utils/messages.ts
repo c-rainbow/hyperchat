@@ -1,8 +1,7 @@
 /**
  * Utility functions related to chat messages
  */
-import { ChatFragment } from "../../common/twitch-ext-emotes";
-
+import { ChatFragment } from '../../common/twitch-ext-emotes';
 
 export function getFullUserName(username: string, displayName: string) {
   if (!displayName) {
@@ -15,10 +14,9 @@ export function getFullUserName(username: string, displayName: string) {
   return `${displayName}(${username})`;
 }
 
-
 export function getTextMessage(fragments: ChatFragment[]) {
   const textFragments = fragments
-    .filter(fragment => fragment.emote === undefined)
-    .map(fragment => fragment.text.trim());
+    .filter((fragment) => fragment.emote === undefined)
+    .map((fragment) => fragment.text.trim());
   return textFragments.join(' ');
 }
