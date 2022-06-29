@@ -1,7 +1,14 @@
 import { app, ipcMain } from 'electron';
 import serve from 'electron-serve';
+import { Client } from 'tmi.js';
 import { createWindow } from './helpers';
-import { translate, translateToEngOrKor } from './lib/translator';
+import { addIpcHandlers } from './ipcHandlers';
+import { ChatManager } from './lib/chatManager';
+import defaultChatMemoManager from './lib/chatMemoManager';
+import defaultEmoteParser from './lib/emoteParser';
+import defaultTranslator from './lib/translator';
+
+let chatManager: ChatManager = null;
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
 
@@ -26,18 +33,21 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }
+
+  chatManager = new ChatManager(
+    mainWindow,
+    new Client({}),
+    defaultEmoteParser,
+    defaultTranslator
+  );
+  await chatManager.connect();
+
+  // Add event handlers
+  addIpcHandlers(ipcMain, chatManager, defaultChatMemoManager);
+  console.log('App is ready');
 })();
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
+  await chatManager.disconnect();
   app.quit();
-});
-
-ipcMain.handle('translate', async (event, line) => {
-  const result = await translate(line);
-  return result;
-});
-
-ipcMain.handle('translateToEngOrKor', async (event, line) => {
-  const result = await translateToEngOrKor(line);
-  return result;
 });

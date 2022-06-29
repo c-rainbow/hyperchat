@@ -1,70 +1,105 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
-import { Client } from 'tmi.js';
-import { francAll } from 'franc';
+import { ChatUserstate, Client } from 'tmi.js';
 import { ipcRenderer } from 'electron';
-import SingleChat from '../components/SingleChat';
+import SingleChat from '../components/chat/SingleChat';
 import Footer from '../components/Footer';
+import { ChatFragment } from '../../common/twitch-ext-emotes';
+import { useSelectedChatStore } from '../states';
+import SingleChatFragment from '../components/chat/SingleChatFragment';
+import { ChatMessageType, TranslationResult } from '../../common/types';
+import { ChatMessage } from '../lib/message';
+import ChatList from '../components/chat/ChatList';
 
 var client: Client = null;
 
 function Home() {
-  const [chatList, setChatList] = useState([]);
+  const [chatList, setChatList] = useState<ChatMessageType[]>([]);
   const chatListRef = useRef(chatList);
   const usernameRef = useRef<HTMLInputElement>();
   const [currentChannel, setCurrentChannel] = useState<string>(null);
 
   const switchChannel = async (e) => {
     e.preventDefault();
+    if (!currentChannel) {
+      ipcRenderer.send('chat.part', currentChannel);
+      console.log('Parted channel', currentChannel);
+    }
     const channel = usernameRef.current?.value;
+
+    ipcRenderer.send('chat.join', channel);
     setCurrentChannel(channel);
+    console.log('Joined channel', channel);
   };
 
+  const { selectChat, chat: selectedChat } = useSelectedChatStore();
+
   useEffect(() => {
-    if (client !== null) {
-      client.disconnect();
-      client = null;
-      setChatList([]);
-      chatListRef.current = [];
-    }
-
-    console.log('useEffect with current channel', currentChannel);
-
-    if (currentChannel === null) {
-      return;
-    }
-
-    client = new Client({
-      channels: [currentChannel],
-    });
-
-    client.connect();
-    console.log('connected to client');
-
-    client.on('message', async (channel, userstate, message, self) => {
+    ipcRenderer.on('chat.new_message', async (event, channel, chatMessage) => {
       console.log('channel:', channel);
-      console.log('userstate:', userstate);
-      console.log('message:', message);
-      console.log('self:', self);
+      console.log('chatMessage:', chatMessage);
 
-      const result = await ipcRenderer.invoke('translateToEngOrKor', message);
-      console.log(result);
+      let newList = [...chatListRef.current, chatMessage];
 
-      console.log('old list:', chatListRef.current);
-      let newList = [
-        ...chatListRef.current,
-        { userstate, message, translated: result.text },
-      ];
-      // Keeps only the last 100 chats
-      if (newList.length > 100) {
-        newList = newList.slice(-100);
+      // Keeps only the last 30 chats
+      if (newList.length > 30) {
+        newList = newList.slice(-30);
       }
       console.log('new list:', newList);
       setChatList(newList);
       chatListRef.current = newList;
     });
+    console.log('ipc Renderer on');
+  }, []);
+
+  /*
+  useEffect(() => {
+    
+    if (currentChannel === null) {
+      return;
+    }
+
+        client.connect();
+    console.log('connected to client');
+
+    client.on(
+      'message',
+      async (channel, userstate: ChatUserstate, message, self) => {
+        console.log('channel:', channel);
+        console.log('userstate:', userstate);
+        console.log('message:', message);
+        console.log('self:', self);
+
+        const fragments: ChatFragment[] = [];/*await ipcRenderer.invoke(
+          'getFragments',
+          userstate['room-id'],
+          message,
+          userstate['emotes'] || {}
+        );
+
+        const translation: TranslationResult = await ipcRenderer.invoke(
+          'translateFragments',
+          fragments
+        );
+        // console.log(translationResult);
+
+        // console.log('old list:', chatListRef.current);
+        // console.log('fragments:', fragments);
+        let newList = [
+          ...chatListRef.current,
+          new ChatMessage(channel, userstate, message, fragments, translation),
+        ];
+        // Keeps only the last 100 chats
+        if (newList.length > 30) {
+          newList = newList.slice(-30);
+        }
+        console.log('new list:', newList);
+        setChatList(newList);
+        chatListRef.current = newList;
+      }
+    );
   }, [currentChannel]);
+  */
 
   /*
   useEffect(
@@ -76,7 +111,7 @@ function Home() {
   return (
     <>
       <Head>
-        <title>Twitch Chat Translator</title>
+        <title>HyperChat</title>
       </Head>
       <div className="drawer">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -100,7 +135,7 @@ function Home() {
                 </svg>
               </label>
             </div>
-            <div className="flex-1 px-2 mx-2 text-3xl">Chat Translator</div>
+            <div className="flex-1 px-2 mx-2 text-3xl">HyperChat</div>
             <div className="flex-none hidden md:block">
               <ul className="menu menu-horizontal">
                 {/* Navbar menu content here. Separate definition for sidebar content */}
@@ -114,9 +149,11 @@ function Home() {
             </div>
           </div>
           {/* Page content here */}
-          <div className="content grid grid-cols-2 divide-x-2">
-            <div className="p-1">
-              <div className="text-2xl w-full text-center">Chat</div>
+          <div className="content flex">
+            <div className="flex-1 p-1 ">
+              <div className="text-2xl w-full text-center">
+                Enter the channel name
+              </div>
               <form
                 onSubmit={switchChannel}
                 className="mt-2 w-full text-center grid justify-center"
@@ -133,24 +170,33 @@ function Home() {
                   Go!
                 </button>
               </form>
-              <div className="divider mt-2 mb-2">Chat</div>
-              <div className="w-full overflow-y-scroll">
-                <>
-                  {chatList.map((singleChat) => {
-                    console.log(singleChat.userstate.id);
-                    return (
-                      <SingleChat
-                        key={singleChat.userstate.id}
-                        userstate={singleChat.userstate}
-                        message={singleChat.message}
-                        translated={singleChat.translated}
-                      />
-                    );
-                  })}
-                </>
+              <div className="divider mt-2 mb-2">
+                {currentChannel
+                  ? `Current in channel ${currentChannel}`
+                  : 'Chat not activated'}
+              </div>
+              <ChatList chatList={chatList} />
+            </div>
+            <div className="flex-1 p-1">
+              <div className="hero min-h-screen bg-base-200">
+                <div className="hero-content text-center">
+                  <div className="max-w-md">
+                    <h1 className="text-5xl font-bold">
+                      {selectedChat?.displayName}
+                    </h1>
+                    <p className="pt-6 pb-2">
+                      {selectedChat?.fragments.map((fragment) => (
+                        <SingleChatFragment fragment={fragment} />
+                      ))}
+                    </p>
+                    <p className="pt-2 pb-6">
+                      Translation: {selectedChat?.translation?.text}
+                    </p>
+                    <button className="btn btn-primary">Learn more</button>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="p-1">Menu comes here</div>
           </div>
         </div>
         <div className="drawer-side">
@@ -166,7 +212,7 @@ function Home() {
           </ul>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

@@ -1,4 +1,33 @@
+import { ChatUserstate } from 'tmi.js';
+import { ChatFragment, TwitchEmoteTags } from './twitch-ext-emotes/types';
 
+
+export type IpcEventChannels = 'translate' | 'translateAuto';
+
+
+export interface ChatMessageType {
+  channel: string;  // Channel name (streamer's username)
+  userstate: ChatUserstate;
+  message: string;
+  fragments: ChatFragment[];
+  translation?: TranslationResult;
+
+  // Wrapper for userstate properties
+  uuid: string;
+  username: string;
+  displayName: string;
+  channelId: string;
+  color?: string;
+  emotes: TwitchEmoteTags
+
+  // Compound properties
+  fullName: string;
+  textMessage: string;
+  isEmoteOnly: boolean;
+}
+
+
+// This interface is copied from googletrans.
 export interface TranslationResult {
   text: string;
   textArray: string[];
@@ -9,20 +38,4 @@ export interface TranslationResult {
   correctedText: string;
   translations: [];
   raw: [];
-}
-
-
-export type EmoteSource = 'twitch' | 'bttv' | 'ffz' | '7tv';
-
-export interface Emote {
-  source: EmoteSource;  // From which emote provider?
-  id: string;  // provider-specific unique ID 
-  text: string;  //  text of the emote (ex: "BibleThump")
-  url: string;  // URL of the emote pic
-}
-
-
-export interface ChatFragment {
-  text: string;
-  emote: Emote;
 }
