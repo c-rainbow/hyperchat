@@ -108,6 +108,14 @@ function Home() {
   );
   */
 
+  const login = async () => {
+    ipcRenderer.send('user.login')
+  }
+
+  const logout = async () => {
+    ipcRenderer.send('user.logout')
+  }
+
   return (
     <>
       <Head>
@@ -143,12 +151,25 @@ function Home() {
                   <a onClick={() => alert('config')}>Config</a>
                 </li>
                 <li>
-                  <a onClick={() => alert('test 2')}>Login</a>
+                  <a onClick={login}>Login</a>
+                </li>
+                <li>
+                  <a onClick={logout}>Logout</a>
                 </li>
               </ul>
             </div>
           </div>
           {/* Page content here */}
+          <div className="tabs">
+            <a className="tab tab-lifted">Channel 1</a> 
+            <a className="tab tab-lifted tab-active">Channel Channel Channel 2</a> 
+            <a className="tab tab-lifted">Channel 3</a>
+            <a className="tab tab-lifted">Channel 4</a>
+            <a className="tab tab-lifted">Channel 5</a>
+            <a className="tab tab-lifted">Channel 6</a>
+            <a className="tab tab-lifted">Channel 7</a>
+
+          </div>
           <div className="content flex">
             <div className="flex-1 p-1 ">
               <div className="text-2xl w-full text-center">

@@ -21,6 +21,10 @@
   },
   "dependencies": {
     "@prisma/client": "^4.0.0",
+    "@twurple/api": "^5.1.6",
+    "@twurple/auth": "^5.1.6",
+    "@twurple/auth-electron": "^5.1.6",
+    "@twurple/chat": "^5.1.7",
     "axios": "^0.27.2",
     "daisyui": "^2.17.0",
     "electron-serve": "^1.1.0",
